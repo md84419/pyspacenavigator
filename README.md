@@ -26,7 +26,7 @@ Implements a simple interface to the 6 DoF 3Dconnexion [Space Navigator](http://
 * SpaceNavigator (0xC626)
 * SpaceMouse Pro (0xC62B)
 * SpaceMouse Pro Wireless (0xC631, 0xC632)
-* SpaceMouse Wireless (0xC62E)
+* SpaceMouse Wireless (0xC62E, 0xC62F)
 * 3Dconnexion Universal Receiver (0xC652)
 * SpaceMouse Compact (0xC635)
 * SpacePilot Pro (0xC629)
