@@ -675,7 +675,7 @@ def open(callback=None, button_callback=None, device=None, DeviceNumber=0):
     # if no device name specified, look for any matching device and choose the first
     if device == None:
         all_devices = list_devices()
-        if len(all_devices) > 0:
+        if len(all_devices) > DeviceNumber:
             device = all_devices[DeviceNumber]
         else:
             return None
