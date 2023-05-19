@@ -74,7 +74,8 @@ class DeviceSpec(object):
         self.button_mapping = button_mapping
         self.axis_scale = axis_scale
 
-        self.led_usage = hid.get_full_usage_id(led_id[0], led_id[1])
+        if led_id is not None and len(led_id) >=2:
+            self.led_usage = hid.get_full_usage_id(led_id[0], led_id[1])
         # initialise to a vector of 0s for each state
         self.dict_state = {
             "t": -1,
