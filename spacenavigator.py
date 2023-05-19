@@ -6,7 +6,7 @@ import copy
 from pywinusb.hid import usage_pages, helpers, winapi
 
 # current version number
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 # clock for timing
 high_acc_clock = timeit.default_timer
@@ -25,8 +25,6 @@ HID_AXIS_MAP = {
     0x34: "pitch",
     0x35: "yaw",
 }
-
-import pprint
 
 # axis mappings are specified as:
 # [channel, byte1, byte2, scale]; scale is usually just -1 or 1 and multiplies the result by this value
@@ -216,6 +214,89 @@ class DeviceSpec(object):
 # the IDs for the supported devices
 # Each ID maps a device name to a DeviceSpec object
 device_specs = {
+    "SpaceMouse Enterprise": DeviceSpec(
+        name="SpaceMouse Enterprise",
+        # vendor ID and product ID
+        hid_id=[0x256f, 0xc633],
+        # LED HID usage code pair
+        led_id=[0x8, 0x4B],
+        mappings={
+            "x": AxisSpec(channel=1, byte1=1, byte2=2, scale=1),
+            "y": AxisSpec(channel=1, byte1=3, byte2=4, scale=-1),
+            "z": AxisSpec(channel=1, byte1=5, byte2=6, scale=-1),
+            "pitch": AxisSpec(channel=1, byte1=7, byte2=8, scale=-1),
+            "roll": AxisSpec(channel=1, byte1=9, byte2=10, scale=-1),
+            "yaw": AxisSpec(channel=1, byte1=11, byte2=12, scale=1),
+        },
+        button_mapping=[
+            ButtonSpec(channel=3, byte=1, bit=0),  # MENU
+            ButtonSpec(channel=3, byte=3, bit=7),  # ALT
+            ButtonSpec(channel=3, byte=4, bit=1),  # CTRL
+            ButtonSpec(channel=3, byte=4, bit=0),  # SHIFT
+            ButtonSpec(channel=3, byte=3, bit=6),  # ESC
+            ButtonSpec(channel=3, byte=2, bit=4),  # 1
+            ButtonSpec(channel=3, byte=2, bit=5),  # 2
+            ButtonSpec(channel=3, byte=2, bit=6),  # 3
+            ButtonSpec(channel=3, byte=2, bit=7),  # 4
+            ButtonSpec(channel=3, byte=2, bit=0),  # ROLL CLOCKWISE
+            ButtonSpec(channel=3, byte=1, bit=2),  # TOP
+            ButtonSpec(channel=3, byte=4, bit=2),  # ROTATION
+            ButtonSpec(channel=3, byte=1, bit=5),  # FRONT
+            ButtonSpec(channel=3, byte=1, bit=4),  # REAR
+            ButtonSpec(channel=3, byte=1, bit=1),
+        ],  # FIT
+        axis_scale=350.0,
+    ),
+    "SpaceExplorer": DeviceSpec(
+        name="SpaceExplorer",
+        # vendor ID and product ID
+        hid_id=[0x46D, 0xC627],
+        # LED HID usage code pair
+        led_id=[0x8, 0x4B],
+        mappings={
+            "x": AxisSpec(channel=1, byte1=1, byte2=2, scale=1),
+            "y": AxisSpec(channel=1, byte1=3, byte2=4, scale=-1),
+            "z": AxisSpec(channel=1, byte1=5, byte2=6, scale=-1),
+            "pitch": AxisSpec(channel=2, byte1=1, byte2=2, scale=-1),
+            "roll": AxisSpec(channel=2, byte1=3, byte2=4, scale=-1),
+            "yaw": AxisSpec(channel=2, byte1=5, byte2=6, scale=1),
+        },
+        button_mapping=[
+            ButtonSpec(channel=3, byte=1, bit=0),  # MENU
+            ButtonSpec(channel=3, byte=3, bit=7),  # ALT
+            ButtonSpec(channel=3, byte=4, bit=1),  # CTRL
+            ButtonSpec(channel=3, byte=4, bit=0),  # SHIFT
+            ButtonSpec(channel=3, byte=3, bit=6),  # ESC
+            ButtonSpec(channel=3, byte=2, bit=4),  # 1
+            ButtonSpec(channel=3, byte=2, bit=5),  # 2
+            ButtonSpec(channel=3, byte=2, bit=6),  # 3
+            ButtonSpec(channel=3, byte=2, bit=7),  # 4
+            ButtonSpec(channel=3, byte=2, bit=0),  # ROLL CLOCKWISE
+            ButtonSpec(channel=3, byte=1, bit=2),  # TOP
+            ButtonSpec(channel=3, byte=4, bit=2),  # ROTATION
+            ButtonSpec(channel=3, byte=1, bit=5),  # FRONT
+            ButtonSpec(channel=3, byte=1, bit=4),  # REAR
+            ButtonSpec(channel=3, byte=1, bit=1),
+
+            # Alternative button mappings from https://github.com/jondavid23/pyspacenavigator
+            # ButtonSpec(channel=3, byte=2, bit=0),  # SHIFT 
+            # ButtonSpec(channel=3, byte=1, bit=6),  # ESC 
+            # ButtonSpec(channel=3, byte=2, bit=1),  # CTRL 
+            # ButtonSpec(channel=3, byte=1, bit=7),  # ALT 
+            # ButtonSpec(channel=3, byte=1, bit=0),  # 1 
+            # ButtonSpec(channel=3, byte=1, bit=1),  # 2 
+            # ButtonSpec(channel=3, byte=2, bit=5),  # - 
+            # ButtonSpec(channel=3, byte=2, bit=4),  # + 
+            # ButtonSpec(channel=3, byte=2, bit=3),  # PANEL 
+            # ButtonSpec(channel=3, byte=2, bit=2),  # FIT 
+            # ButtonSpec(channel=3, byte=1, bit=2),  # TOP 
+            # ButtonSpec(channel=3, byte=1, bit=5),  # FRONT 
+            # ButtonSpec(channel=3, byte=1, bit=3),  # LEFT 
+            # ButtonSpec(channel=3, byte=1, bit=4),  # RIGHT 
+            # ButtonSpec(channel=3, byte=2, bit=6),  # 2D 
+        ],  # FIT
+        axis_scale=350.0,
+    ),
     "SpaceNavigator": DeviceSpec(
         name="SpaceNavigator",
         # vendor ID and product ID
@@ -535,7 +616,7 @@ def open(callback=None, button_callback=None, device=None, DeviceNumber=0):
     if device == None:
         all_devices = list_devices()
         if len(all_devices) > 0:
-            device = all_devices[0]
+            device = all_devices[DeviceNumber]
         else:
             return None
 
@@ -584,14 +665,17 @@ def open(callback=None, button_callback=None, device=None, DeviceNumber=0):
 def print_state(state):
     # simple default printer callback
     if state:
-        print(
-            " ".join(
-                [
-                    "%4s %+.2f" % (k, getattr(state, k))
-                    for k in ["x", "y", "z", "roll", "pitch", "yaw", "t"]
-                ]
-            )
-        )
+        print(" ".join(["%4s %+.2f" % (k, getattr(state, k)) for k in ["x", "y", "z", "roll", "pitch", "yaw", "t"]]))
+
+
+def print_mouse_L(state):
+    print("Left Mouse")
+    print(" ".join(["%4s %+.2f" % (k, getattr(state, k)) for k in ["x", "y", "z", "roll", "pitch", "yaw", "t"]]))
+
+
+def print_mouse_R(state):
+    print("Right Mouse")
+    print(" ".join(["%4s %+.2f" % (k, getattr(state, k)) for k in ["x", "y", "z", "roll", "pitch", "yaw", "t"]]))
 
 
 def toggle_led(state, buttons):
@@ -610,8 +694,10 @@ def set_led(state):
 
 if __name__ == "__main__":
     print("Devices found:\n\t%s" % "\n\t".join(list_devices()))
-    dev = open(callback=print_state, button_callback=toggle_led)
+    dev = open(callback=print_state, button_callback=toggle_led,DeviceNumber=0)
+    dev2 = open(callback=print_state, button_callback=toggle_led,DeviceNumber=1)
     print(dev.describe_connection())
+    print(dev2.describe_connection())
 
     if dev:
         dev.set_led(0)
@@ -620,5 +706,3 @@ if __name__ == "__main__":
             dev.set_led(1)
             sleep(1)
             dev.set_led(0)
-
-            

@@ -12,4 +12,5 @@ setup(
     keywords=["spacenavigator", "3d", "6 DoF", "HID"],
     py_modules=["spacenavigator"],
     classifiers=[],
+    install_requires=["pywinusb"],
 )

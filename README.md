@@ -1,15 +1,35 @@
 # pyspacenavigator
+This is a fork of https://github.com/johnhw/pyspacenavigator
+
+This fork incorporates the following changes over johnw's original code:
+
+From https://github.com/FaneIsAvailable/pyspacenavigator, added:
+   - SpaceMouse Enterprise, device ID 0xC633
+   - SpaceExplorer, device ID 0xC627
+   - test.py
+
+From https://github.com/jondavid23/pyspacenavigator, added:
+   - Alternative button mappings for SpaceExplorer, device ID 0xC627
+
+From https://github.com/duncanmcbryde/pyspacenavigator, added:
+   - pre-requsite (pywinusb) in setup.py
+
+
+# Original README:
+
 3Dconnexion Space Navigator in Python using raw HID (Windows only). Note: you **don't** need to install or use any of the drivers or 3Dconnexion software to use this package. It interfaces with the controller directly.
 
 Implements a simple interface to the 6 DoF 3Dconnexion [Space Navigator](http://www.3dconnexion.co.uk/products/spacemouse/spacenavigator.html) device as well as similar devices. The following 3dconnexion devices are supported:
 
-* SpaceNavigator
-* SpaceMouse Pro
-* SpaceMouse Pro Wireless
-* SpaceMouse Wireless
-* 3Dconnexion Universal Receiver
-* SpaceMouse Compact
-* SpacePilot Pro
+* SpaceNavigator (0xC626)
+* SpaceMouse Pro (0xC62B)
+* SpaceMouse Pro Wireless (0xC631, 0xC632)
+* SpaceMouse Wireless (0xC62E)
+* 3Dconnexion Universal Receiver (0xC652)
+* SpaceMouse Compact (0xC635)
+* SpacePilot Pro (0xC629)
+* SpaceMouse Enterprise (0xC633)
+* SpaceExplorer (0xC627)
 
 Requires [pywinusb](https://pypi.python.org/pypi/pywinusb/) to access HID data -- this is Windows only.
 
@@ -24,7 +44,7 @@ Requires [pywinusb](https://pypi.python.org/pypi/pywinusb/) to access HID data -
         state = spacenavigator.read()
         print(state.x, state.y, state.z)
         time.sleep(0.5)
-      
+
 ## State objects      
 State objects returned from read() have 7 attributes: [t,x,y,z,roll,pitch,yaw,button].
 
@@ -51,8 +71,8 @@ State objects returned from read() have 7 attributes: [t,x,y,z,roll,pitch,yaw,bu
     close()             Close the connection to the current device, if it is open
     set_led(state)      Set the status of the current devices LED to either on (True) or off (False)
     list_devices()      Return a list of supported devices found, or an empty list if none found
-    
-    
+
+
 open() returns a DeviceSpec object. If you have multiple 3Dconnexion devices, you can use the object-oriented API to access them individually.
 Each object has the following API, which functions exactly as the above API, but on a per-device basis:
 
@@ -66,9 +86,3 @@ There are also attributes:
     
     dev.connected       True if the device is connected, False otherwise
     dev.state           Convenience property which returns the same value as read()
-    
-    
-    
-    
-
-
