@@ -14,6 +14,8 @@ From https://github.com/jondavid23/pyspacenavigator, added:
 From https://github.com/duncanmcbryde/pyspacenavigator, added:
    - pre-requsite (pywinusb) in setup.py
 
+From https://github.com/JakubAndrysek/pyspacemouse,added:
+  - SpacePilot, 0xC625
 
 # Original README:
 
@@ -30,6 +32,7 @@ Implements a simple interface to the 6 DoF 3Dconnexion [Space Navigator](http://
 * SpacePilot Pro (0xC629)
 * SpaceMouse Enterprise (0xC633)
 * SpaceExplorer (0xC627)
+* SpacePilot (0xC625)
 
 Requires [pywinusb](https://pypi.python.org/pypi/pywinusb/) to access HID data -- this is Windows only.
 
